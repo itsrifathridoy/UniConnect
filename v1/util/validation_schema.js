@@ -46,6 +46,11 @@ const studentTokenVerifySchema = Joi.object({
     accessToken: Joi.string().required(),
 })
 
+const questionSchema = Joi.object({
+    quesText: Joi.string().required(),
+    imgPath: Joi.string(),
+    status: Joi.string(),
+})
 
 module.exports = {
     registerSchema,
@@ -56,5 +61,6 @@ module.exports = {
     universityAddEmailsSchema,
     verifyUniversitySchema,
     studentVerifySchema,
-    studentTokenVerifySchema
+    studentTokenVerifySchema,
+    questionSchema
 }
