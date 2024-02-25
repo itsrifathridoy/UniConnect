@@ -51,6 +51,22 @@ const questionSchema = Joi.object({
     imgPath: Joi.string(),
     status: Joi.string(),
 })
+const answerSchema = Joi.object({
+    quesID: Joi.number().required(),
+    ansText: Joi.string().required(),
+    imgPath: Joi.string(),
+})
+const answerUpdateSchema = Joi.object({
+    ansText: Joi.string().required(),
+    imgPath: Joi.string(),
+})
+const feedbackSchema = Joi.object({
+    ansID: Joi.number().required(),
+    comment: Joi.string().required()
+})
+const feedbackUpdateSchema = Joi.object({
+    comment: Joi.string(),
+})
 
 module.exports = {
     registerSchema,
@@ -62,5 +78,9 @@ module.exports = {
     verifyUniversitySchema,
     studentVerifySchema,
     studentTokenVerifySchema,
-    questionSchema
+    questionSchema,
+    answerSchema,
+    answerUpdateSchema,
+    feedbackSchema,
+    feedbackUpdateSchema
 }
