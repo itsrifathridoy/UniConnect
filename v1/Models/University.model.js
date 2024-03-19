@@ -3,25 +3,31 @@ const helper = require('../util/helper');
 const createError = require('http-errors');
 const bcrypt = require('bcrypt');
 class UniversityModel{
-    constructor(uniID,name,email,website,approval)
+    constructor(uniID,name,type,email,website,approval,description)
     {
         this.uniID = uniID;
         this.name = name;
+        this.type = type;
         this.email = email;
         this.website = website;
         this.approval = approval;
+        this.description = description;
     }
     async create()
     {
         try {
             const result = await db.query(
               `INSERT INTO university 
-              (uniID, name, email,website) 
+              (uniID, name,type, email,website,description) 
               VALUES 
-              ('${this.uniID}', '${this.name}', '${this.email}', '${this.website}')`
+              ('${this.uniID}', '${this.name}','${this.type}', '${this.email}', '${this.website}','${this.description}')`
             );
-      
-            return result;
+
+            return {
+              success: true,
+              message: `Approval request send for ${this.name}. We'll contract with you within 24h via email.`,
+            };
+              
           } catch (error) {
             return createError.InternalServerError(error);
           }
@@ -47,9 +53,10 @@ class UniversityModel{
       }
       
       
-  static async get(uniID,field = 'uniID') {
-    const query = `SELECT * FROM university WHERE ${field} = ?`;
-    const rows = await db.query(query, [uniID]);
+  static async get(fieldValue,field = 'uniID') {
+    const query = `SELECT * FROM university WHERE ${field} = '${fieldValue}'`;
+    console.log(query)
+    const rows = await db.query(query);
     const data = helper.emptyOrRows(rows);
     if(!data.length) return null;
     return data;
@@ -61,6 +68,7 @@ class UniversityModel{
     if(!data.length) return null;
     return data[0].allowedEmails;
   }
+  
 
 }
 module.exports = {

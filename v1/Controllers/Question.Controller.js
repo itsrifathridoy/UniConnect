@@ -3,6 +3,7 @@ const db = require('../services/db');
 const {QuestionModel} = require('../Models/Question.model');
 const {AnswerModel} = require('../Models/Answer.model');
 const {FeedbackModel} = require('../Models/Feedback.model');
+const EventEmmiter = require('../util/event');
 const createError = require('http-errors');
 function generateQuestionId() {
     return Math.floor(Math.random() * 1000000);
@@ -13,6 +14,7 @@ module.exports = {
             const validate = await questionSchema.validateAsync(req.body);
             const question = new QuestionModel(generateQuestionId(),req.user.userID,validate.quesText,validate.imgPath); 
             const result = await question.create(); 
+            EventEmmiter.emit('question', question);
             res.json(result);
         } catch (error) {
             next(error);

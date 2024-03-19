@@ -11,7 +11,7 @@ class QuestionModel {
   }
   async create() {
     try {
-      const result = await db.query(`INSERT INTO questions (quesID,userID,quesText,imgPath) VALUES (?,?,?,?)`, [this.quesID, this.userID, this.quesText, this.imgPath]);
+      const result = await db.query(`INSERT INTO questions (quesID,userID,quesText,imgPath) VALUES ('${this.quesID}','${this.userID}','${this.quesText}','${this.imgPath}')`);
       return {
         success: true,
         message: `Question Created Successfully`,

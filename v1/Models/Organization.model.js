@@ -3,22 +3,23 @@ const helper = require('../util/helper');
 const createError = require('http-errors');
 const bcrypt = require('bcrypt');
 class OrganizationModel{
-    constructor(orgID,name,email,website,approval)
+    constructor(orgID,name,email,website,approval,description)
     {
         this.orgID = orgID;
         this.name = name;
         this.email = email;
         this.website = website;
         this.approval = approval;
+        this.description = description;
     }
     async create()
     {
         try {
             const result = await db.query(
               `INSERT INTO organization 
-              (orgID, name, email,website) 
+              (orgID, name, email,website,description) 
               VALUES 
-              ('${this.orgID}', '${this.name}', '${this.email}', '${this.website}')`
+              ('${this.orgID}', '${this.name}', '${this.email}', '${this.website}','${this.description}')`
             );
       
             return {

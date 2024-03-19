@@ -6,6 +6,16 @@ const app = express();
 app.use(express.json());
 app.use(moragn('dev'));
 
+// Access-Control-Allow-Origin
+//Access-Control-Allow-Methods
+//Access-Control-Allow-Headers
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+});
+
 //version 1
 app.use('/v1', v1);
 

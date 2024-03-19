@@ -1,7 +1,7 @@
 const { UniversityModel } = require("../Models/University.model")
 const UserModel = require('../Models/User.model');
 const crypto = require('crypto');
-const { universityRegSchema,universityAddEmailsSchema,verifyUniversitySchema } = require('../util/validation_schema');
+const { universityRegSchema,universityAddEmailsSchema,verifyUniversitySchema,universityApproveSchema } = require('../util/validation_schema');
 const createError = require('http-errors');
 const { sendMail } = require('../services/email')
 const { } = require('../Models/University.model');
@@ -23,11 +23,9 @@ module.exports = {
     register: async (req, res, next) => {
         try {
             const validate = await universityRegSchema.validateAsync(req.body);
-
             const doesExist = await UniversityModel.get(validate.email,"email");
-
-            console.log(validate)
             console.log(doesExist)
+            console.log(validate)
             if(doesExist) throw createError.Conflict("University already has been registered");
 
 
@@ -39,19 +37,15 @@ module.exports = {
             const username = validate.website.split(".")[0];
 
             const user  = new UserModel(uniID,username,validate.email,validate.name,hashPassword,"guestUniversity");
-            await user.create();
+            const resp = await user.create();
 
-            const uni = new UniversityModel(uniID, validate.name, validate.email, validate.website);
+
+            const uni = new UniversityModel(uniID,validate.name,validate.type,validate.email,validate.website,0,validate.description);
         
             const result = await uni.create();
-
-            const accessToken = await signAccessToken(uniID);
-            const refreshToken = await signRefreshToken(uniID);
-            const hostname = process.env.HOSTNAME || 'localhost';
-            const port = process.env.PORT || 2000;
-            const emailURL = `http://${hostname}:${port}/v1/university/verify?token=${accessToken}`;
-            await sendMail(validate.email, "University Account Created", `<p>Click <a href="${emailURL}">here</a> to verify your account</p>`); 
-            res.send({accessToken,refreshToken});
+            console.log("result",result)
+            console.log("resp",resp)
+            res.status(201).send(result);
         }
         catch (err) {
             if (err.isJoi === true) err.status = 422;
@@ -77,7 +71,10 @@ module.exports = {
 
                 await db.query(`UPDATE users SET role = 'university' WHERE userID = '${user.userID}';`);
                 await sendMail(user.email, "University Account Verified", `<p>Your account has been verified</p>`);
-                return res.send(user);
+                const accessToken = await signAccessToken(user.userID);
+                const refreshToken = await signRefreshToken(user.userID);
+                user.role = "university";
+                res.send({accessToken,refreshToken,user});
             });
         }
         catch (err) {
@@ -86,7 +83,8 @@ module.exports = {
     },
     approve: async (req, res, next) => {
         try {
-            const result = await UniversityModel.get(req.body.uniID);
+            const validate = await universityApproveSchema.validateAsync(req.body);
+            const result = await UniversityModel.get(validate.uniID);
             if (!result) throw createError.NotFound("University Not Found");
             req.uni = {
                 uniID: result[0].uniID,
@@ -98,8 +96,13 @@ module.exports = {
                 throw createError.Conflict(`${result[0].name} is already approved. Please check your official email`);
 
             await UniversityModel.update({ approval: 1 }, req.body.uniID);
-            await sendMail(req.uni.email, "University Account Approved", `<p>Your account has been approved</p>`);
-            res.send(req.uni);
+            const accessToken = await signAccessToken(req.uni.uniID);
+            const refreshToken = await signRefreshToken(req.uni.uniID);
+            const hostname = process.env.HOSTNAME || 'localhost';
+            const port = process.env.PORT || 2000;
+            const emailURL = `http://${hostname}:${port}/v1/university/verify?token=${accessToken}`;
+            await sendMail(req.uni.email, "University Account Approved", `<p>Click <a href="${emailURL}">here</a> to verify your account</p>`);
+            res.send({ accessToken, refreshToken });
         }
         catch (err) {
             next(err);

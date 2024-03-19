@@ -1,11 +1,12 @@
 const createError = require('http-errors');
-const userModel = require('../Models/User.model');
+const UserModel = require('../Models/User.model');
 const helper = require('../util/helper');
 const crypto = require('crypto'); 
 const db = require('../services/db');
 const { registerSchema, loginSchema } = require('../util/validation_schema');
 const { encryptPassword,validateLogin } = require('../Middleware/Auth.middleware');
 const { signAccessToken,verifyAccessToken,signRefreshToken, verifyRefreshToken } = require('../util/jwt');
+const User = require('../Models/User.model');
 
 
 module.exports = {
@@ -13,14 +14,22 @@ module.exports = {
         try{
             const {name,email,password}  = req.body;
             const username = email.split("@")[0];
-            const user = new userModel(crypto.randomUUID(),username.toLowerCase(),email.toLowerCase(),name,password,"user");
+            //create user
+            const user = new UserModel(crypto.randomUUID(),username.toLowerCase(),email.toLowerCase(),name,password,"user");
             const doesExist = await user.get("email")
             if(doesExist) throw createError.Conflict(`${email} already been register`);
     
             const result = await user.create();
             const accessToken = await signAccessToken(user.userID); 
             const refreshToken = await signRefreshToken(user.userID);
-            res.send({accessToken,refreshToken});
+            res.send({accessToken,refreshToken,user:
+                {
+                    userID: user.userID,
+                    username: user.username,
+                    email: user.email,
+                    role: user.role
+                }}
+                );
         }
         catch(err)
         {
@@ -32,21 +41,32 @@ module.exports = {
         try {
             const accessToken = await signAccessToken(req.userID); 
             const refreshToken = await signRefreshToken(req.userID);
-            res.send({accessToken,refreshToken});
+            const user  = (await UserModel.getWithFilter({userID: req.userID})).data[0];
+            res.send({
+                user,
+                accessToken,
+                refreshToken
+            });
         } catch (error) {
             next(error)
         }
         
     },
     refreshToken:  async (req, res, next) => {  
-        const accessToken = await signAccessToken(req.payload.aud);
+        try {
+            const accessToken = await signAccessToken(req.payload.aud);
         const refreshToken = await signRefreshToken(req.payload.aud);
         try {
             await db.query(`DELETE FROM refreshtoken WHERE userID = '${req.payload.aud}' && token = '${req.refreshToken}';`);
         } catch (error) {
             next(error);
         }
-        res.send({accessToken,refreshToken})
+        const user = req.user.data[0];
+        res.send({accessToken,refreshToken,user})
+        } catch (error) {
+            next(error);
+        }
+        
     },
     logout: async (req, res, next) => {  
         try {

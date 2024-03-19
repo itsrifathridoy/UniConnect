@@ -4,6 +4,7 @@ const { verifyAccessToken } = require('../util/jwt');
 const QuestionController = require('../Controllers/Question.Controller');
 const { onlyAdminAccess } = require('../Middleware/Admin.middleware');
 const { spamProtection,ownQuestionAccess } = require('../Middleware/Question.middleware');
+const EventEmmiter = require('../util/event');
 const router = express.Router();
 
 router.post('/create',verifyAccessToken,questionAccess,spamProtection,QuestionController.create);
@@ -26,5 +27,11 @@ router.post('/feedback/create',verifyAccessToken,questionAccess,QuestionControll
 router.put('/feedback/update',verifyAccessToken,questionAccess,QuestionController.updateFeedback);
 router.post('/feedback/rate',verifyAccessToken,questionAccess,QuestionController.rateFeedback);
 router.delete('/feedback/delete',verifyAccessToken,studentAndAdminAccess,QuestionController.deleteFeedback);
+
+router.post("/test",async(req,res)=>{
+    EventEmmiter.emit('question', req.body);
+    res.send("Question Route Works"); 
+
+});
 
 module.exports = router;

@@ -2,6 +2,8 @@ const jwt  = require('jsonwebtoken');
 const createError = require('http-errors');
 const db = require('../services/db');
 const moment = require('moment');
+const User = require('../Models/User.model');
+const { re } = require('mathjs');
 
 function generateExpireAt(expiration) {
 
@@ -84,6 +86,9 @@ module.exports =  {
                 return next(createError.Unauthorized(err.message))
             }
             const result = await db.query(`SELECT * FROM refreshtoken WHERE token = '${token}';`);
+            console.log(result)
+            req.user =  await User.getWithFilter({userID: payload.aud}); 
+            console.log(req.user)
             if(result.length===0) 
             next(createError.Unauthorized("Invalid Refresh Token"));
             req.payload = payload;

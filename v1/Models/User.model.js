@@ -13,12 +13,11 @@ class User {
   }
   async create() {
     try {
-      const result = await db.query(
-        `INSERT INTO users 
-        (userID, username, email,name, password, role) 
-        VALUES 
-        ('${this.userID}', '${this.username}', '${this.email}', '${this.name}', '${this.password}', '${this.role}')`
-      );
+      const sql = `INSERT INTO users 
+      (userID, username, email,name, password, role) 
+      VALUES 
+      ('${this.userID}', '${this.username}', '${this.email}', '${this.name}', '${this.password}', '${this.role}')`
+      const result = await db.query(sql);
 
       return result;
     } catch (error) {

@@ -10,10 +10,14 @@ const loginSchema = Joi.object({
 })
 const universityRegSchema = Joi.object({
     name: Joi.string().required(),
+    type: Joi.string().required(),
     email: Joi.string().email().lowercase().required(),
     password: Joi.string().min(6).required(),
-    website: Joi.string().pattern(/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/,"website").required(),
-
+    website: Joi.string().required(),
+    description: Joi.string()
+})
+const universityApproveSchema = Joi.object({
+    uniID: Joi.string().required(),
 })
 const verifyUniversitySchema = Joi.object({
     accessToken: Joi.string().required(),
@@ -26,7 +30,8 @@ const organizationRegSchema = Joi.object({
     name: Joi.string().required(),
     email: Joi.string().email().lowercase().required(),
     website: Joi.string().pattern(/^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\.[a-zA-Z]{2,3})$/,"website").required(),
-
+    password: Joi.string().min(6).required(),
+    description: Joi.string()
 })
 const clubRegSchema = Joi.object({
     name: Joi.string().required(),
@@ -72,6 +77,7 @@ module.exports = {
     registerSchema,
     loginSchema,
     universityRegSchema,
+    universityApproveSchema,
     organizationRegSchema,
     clubRegSchema,
     universityAddEmailsSchema,
