@@ -14,6 +14,7 @@ module.exports = {
     register: async (req, res, next) => {  
         try{
             const {name,email,password}  = req.body;
+            //rifat@mmmfd
             const username = email.split("@")[0];
             //create user
             const user = new UserModel(crypto.randomUUID(),username.toLowerCase(),email.toLowerCase(),name,password,"user");
@@ -45,19 +46,12 @@ module.exports = {
             const accessToken = await signAccessToken(req.userID); 
             const refreshToken = await signRefreshToken(req.userID);
             const user  = (await UserModel.getWithFilter({userID: req.userID})).data[0];
-            if(req.headers['content-type'] === 'application/json') {
+    
             res.send({
                 user,
                 accessToken,
                 refreshToken
             });
-        }
-        else {
-            res.cookie('accessToken',accessToken);
-            res.cookie('refreshToken',refreshToken);
-            res.cookie('user',JSON.stringify(user));
-            res.redirect(`/`)
-        }
         } catch (error) {
             next(error)
         }

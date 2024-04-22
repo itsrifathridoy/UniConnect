@@ -23,9 +23,8 @@ module.exports = {
     register: async (req, res, next) => {
         try {
             const validate = await universityRegSchema.validateAsync(req.body);
-            const doesExist = await UniversityModel.get(validate.email,"email");
-            console.log(doesExist)
-            console.log(validate)
+            const doesExist = await UniversityModel.get(req.body.email,"email");
+    
             if(doesExist) throw createError.Conflict("University already has been registered");
 
 
@@ -43,8 +42,7 @@ module.exports = {
             const uni = new UniversityModel(uniID,validate.name,validate.type,validate.email,validate.website,0,validate.description);
         
             const result = await uni.create();
-            console.log("result",result)
-            console.log("resp",resp)
+        
             res.status(201).send(result);
         }
         catch (err) {

@@ -10,11 +10,15 @@ const router = express.Router();
 
 
 router.post('/register', UniversityController.register);
-router.get('/verify', UniversityController.verify);
 router.post('/approve',verifyAccessToken,onlyAdminAccess,UniversityController.approve);
-router.post('/addemails',verifyAccessToken,onlyUniversityAccess,UniversityController.addEmailRegex);
+router.get('/verify', UniversityController.verify);
 
-router.get('/getAll',UniversityController.getUniversity);
+
+
+
+// router.post('/addemails',verifyAccessToken,onlyUniversityAccess,UniversityController.addEmailRegex);
+
+// router.get('/getAll',UniversityController.getUniversity);
 
 
 module.exports = router;

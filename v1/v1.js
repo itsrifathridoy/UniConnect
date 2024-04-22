@@ -30,11 +30,13 @@ const router = express.Router();
 router.use('/auth', AuthRoute);
 
 router.use('/university', UniversityRoute);
+router.use('/org', OrganizationRoute);
+
+
+
 // router.use('/club', ClubRoute);
 router.use('/student', StudentRoute);
 
-
-router.use('/org', OrganizationRoute);
 router.use('/user', UsersRoute);
 
 // router.get('/result', async (req, res) => {
@@ -50,6 +52,10 @@ router.use('/question', QuestionRoute);
 router.use('/project',ProjectRoute)
 
 router.use('/event',EventRoute)
+
+
+
+
 
 router.post('/test', async (req, res,next) => {
     try {

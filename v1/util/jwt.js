@@ -115,7 +115,7 @@ module.exports =  {
             }
             const result = await db.query(`SELECT * FROM refreshtoken WHERE token = '${token}';`);
             req.user =  await User.getWithFilter({userID: payload.aud}); 
-            if(result.length===0) 
+            if(result.length===0)
             next(createError.Unauthorized("Invalid Refresh Token"));
             req.payload = payload;
             req.refreshToken = token;

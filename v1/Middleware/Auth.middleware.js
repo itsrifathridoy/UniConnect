@@ -31,19 +31,11 @@ async function validateLogin(req,res,next)
     const data = helper.emptyOrRows(rows);
     if(data.length === 0) 
     {
-      if(req.headers['content-type']!= 'application/json') 
-      {
-         return res.redirect('/login')
-      }
       next(createError.Unauthorized("email & password not match"))
     }
     const isMatch = await bcrypt.compare(password,data[0].password)
     if(!isMatch) 
     {
-      if(req.headers['content-type']!= 'application/json') 
-      {
-         return res.redirect('/login')
-      }
       next(createError.Unauthorized("email & password not match"))
     }
     req.userID = data[0].userID;

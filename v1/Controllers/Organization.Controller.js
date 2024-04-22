@@ -60,7 +60,6 @@ module.exports = {
             const emailURL = `http://${hostname}:${port}/v1/org/verify?token=${accessToken}`;
             await sendMail(req.org.email, "Organization Account Approved", `<p>Click <a href="${emailURL}">here</a> to verify your account</p>`);
             res.send({ accessToken, refreshToken });
-            res.send(req.org);
         }
         catch (err) {
             next(err);
