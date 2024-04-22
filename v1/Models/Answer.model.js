@@ -69,13 +69,15 @@ class AnswerModel {
         answers.userID AS answerUserID,
         users_answer.username AS answerUsername,
         users_answer.name AS answerName,
+        users_answer.avatar AS answerAvatar,
         feedback.feedbackID,
         feedback.comment,
         feedback.rating,
         feedback.timestamp AS feedbackTimestamp,
         feedback.userID AS feedbackUserID,
         users_feedback.username AS feedbackUsername,
-        users_feedback.name AS feedbackName
+        users_feedback.name AS feedbackName,
+        users_feedback.avatar AS feedbackAvatar
     FROM answers
     LEFT JOIN feedback ON answers.ansID = feedback.ansID
     LEFT JOIN users AS users_answer ON answers.userID = users_answer.userID
@@ -96,7 +98,8 @@ class AnswerModel {
                     answerUser: {
                         userID: item.answerUserID,
                         username: item.answerUsername,
-                        name: item.answerName
+                        name: item.answerName,
+                        avatar: item.answerAvatar
                     },
                     feedback: []
                 };
@@ -110,7 +113,8 @@ class AnswerModel {
                         feedbackUser: {
                             userID: item.feedbackUserID,
                             username: item.feedbackUsername,
-                            name: item.feedbackName
+                            name: item.feedbackName,
+                            avatar: item.feedbackAvatar
                         }
                     });
                 }

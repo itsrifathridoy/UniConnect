@@ -3,6 +3,8 @@ const createError = require('http-errors');
 const db = require('../services/db');
 const helper = require('../util/helper')
 const { registerSchema, loginSchema } = require('../util/validation_schema');
+
+
 async function encryptPassword(request, response, next) {
   try {
     const validate = await registerSchema.validateAsync(request.body);
@@ -27,9 +29,23 @@ async function validateLogin(req,res,next)
   const query = `SELECT userID,password FROM users WHERE email = '${email}'`;
     const rows = await db.query(query);
     const data = helper.emptyOrRows(rows);
-    if(data.length === 0) next(createError.Unauthorized("email & password not match"))
+    if(data.length === 0) 
+    {
+      if(req.headers['content-type']!= 'application/json') 
+      {
+         return res.redirect('/login')
+      }
+      next(createError.Unauthorized("email & password not match"))
+    }
     const isMatch = await bcrypt.compare(password,data[0].password)
-    if(!isMatch) next(createError.Unauthorized("email & password not match"))
+    if(!isMatch) 
+    {
+      if(req.headers['content-type']!= 'application/json') 
+      {
+         return res.redirect('/login')
+      }
+      next(createError.Unauthorized("email & password not match"))
+    }
     req.userID = data[0].userID;
     next()
   } catch (error) {

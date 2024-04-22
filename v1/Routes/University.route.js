@@ -14,5 +14,7 @@ router.get('/verify', UniversityController.verify);
 router.post('/approve',verifyAccessToken,onlyAdminAccess,UniversityController.approve);
 router.post('/addemails',verifyAccessToken,onlyUniversityAccess,UniversityController.addEmailRegex);
 
+router.get('/getAll',UniversityController.getUniversity);
+
 
 module.exports = router;

@@ -11,10 +11,12 @@ function generateQuestionId() {
 module.exports = {
     create: async (req,res,next) => {
         try {
+            console.log(req.files[0]);
             const validate = await questionSchema.validateAsync(req.body);
-            const question = new QuestionModel(generateQuestionId(),req.user.userID,validate.quesText,validate.imgPath); 
+            imgPath =  req.files[0]?`/uploads/questions/${req.files[0].filename}`:undefined;
+            const question = new QuestionModel(generateQuestionId(),req.user.userID,validate.quesText,imgPath); 
             const result = await question.create(); 
-            EventEmmiter.emit('question', question);
+            // EventEmmiter.emit('question', question);
             res.json(result);
         } catch (error) {
             next(error);

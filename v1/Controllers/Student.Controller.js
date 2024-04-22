@@ -11,13 +11,16 @@ const jwt = require('jsonwebtoken');
 module.exports = {
     sendVerifyURL: async (req, res, next) => {
         try {
+            if(req.body.graduationDate==="") delete req.body.graduationDate;
             const validate = await studentVerifySchema.validateAsync(req.body);
             const doesExist = await StudentModel.get(req.user.userID);
             if(doesExist && doesExist[0].verified) throw createError.Conflict("Student account already verified");
             if(doesExist) 
                 await db.query(`DELETE FROM students WHERE stuID = '${req.user.userID}';`);
-            const student = new StudentModel(req.user.userID,validate.eduMail,validate.uniID,validate.department,validate.enrollmentDate,validate.graduationDate);
-            await student.create();
+            const duplicateEmail = await db.query(`SELECT * FROM students WHERE eduMail = '${validate.eduMail}';`);
+            if(duplicateEmail.length>0) throw createError.Conflict("An account already verified with this email");
+            const student = new StudentModel(req.user.userID,validate.eduMail,validate.uniID,validate.department,validate.enrollmentDate,validate.graduationDate?validate.graduationDate:null);
+            const result = await student.create();
             const accessToken = await signAccessToken(req.user.userID);
             const hostname = process.env.HOSTNAME || 'localhost';
             const port = process.env.PORT || 2000;
@@ -51,7 +54,7 @@ module.exports = {
                 await db.query(`UPDATE students SET verified = 1 WHERE stuID = '${user.userID}';`);
 
                 await sendMail(user.email, "Account Verified", `<p>Your account has been verified</p>`);
-                return res.send(user);
+                return res.redirect('http://localhost:5173/verify/ok');
             });
         }
         catch (err) {

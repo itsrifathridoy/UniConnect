@@ -12,7 +12,6 @@ services:
       - PUID=${config.PUID || 1000}
       - PGID=${config.PGID || 1000}
       - TZ=${config.TZ || 'Etc/UTC'}
-      - PASSWORD=${config.PASSWORD || 'password'} #optional
       - HASHED_PASSWORD=${config.HASHED_PASSWORD || ''} #optional
       - SUDO_PASSWORD=${config.SUDO_PASSWORD || 'password'} #optional
       - SUDO_PASSWORD_HASH=${config.SUDO_PASSWORD_HASH || ''} #optional

@@ -84,7 +84,7 @@ class User {
       const filterClauses = Object.keys(filters).map(key => `${key} = ?`);
       const whereClause = filterClauses.length > 0 ? `WHERE ${filterClauses.join(' AND ')}` : '';
 
-      const query = `SELECT userID, username, email, role FROM users ${whereClause}`;
+      const query = `SELECT userID, username, name, email, role,avatar FROM users ${whereClause}`;
       const values = Object.values(filters);
 
       const rows = await db.query(query, values);
@@ -109,6 +109,26 @@ class User {
       data,
       meta,
     };
+  }
+  static async updateUser(fields,userID){
+    try {
+      const updateFields = Object.keys(fields).map(key => `${key} = ?`).join(', ');
+      const values = Object.values(fields);
+      const query = `UPDATE users SET ${updateFields} WHERE userID = ?`;
+      const result = await db.query(query, [...values, userID]);
+
+      return {
+        success: true,
+        message: `User with ID ${userID} updated successfully.`,
+      };
+    } catch (error) {
+      console.error('Error in updateUser:', error);
+      return {
+        success: false,
+        error: 'An error occurred while updating the user.',
+      };
+    }
+    
   }
 }
 

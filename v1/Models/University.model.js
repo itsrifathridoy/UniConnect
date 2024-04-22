@@ -61,6 +61,13 @@ class UniversityModel{
     if(!data.length) return null;
     return data;
   }
+  static async getAll() {
+    const query = `SELECT * FROM university`;
+    const rows = await db.query(query);
+    const data = helper.emptyOrRows(rows);
+    if(!data.length) return null;
+    return data;
+  }
   static async getRegex(uniID,field = 'uniID') {
     const query = `SELECT allowedEmails	FROM university WHERE ${field} = ?`;
     const rows = await db.query(query, [uniID]);

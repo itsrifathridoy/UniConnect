@@ -24,6 +24,8 @@ module.exports = {
             const username = validate.website.split(".")[0];
 
             const user  = new UserModel(orgID,username,validate.email,validate.name,hashPassword,"guestOrg");
+            const isMatch = await user.get("email");
+            if(isMatch) throw createError.Conflict("Email already exists");
             await user.create();
 
             const org = new OrganizationModel(orgID,validate.name,validate.email,validate.website,0,validate.description);

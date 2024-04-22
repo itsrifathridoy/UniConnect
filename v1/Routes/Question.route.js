@@ -6,8 +6,21 @@ const { onlyAdminAccess } = require('../Middleware/Admin.middleware');
 const { spamProtection,ownQuestionAccess } = require('../Middleware/Question.middleware');
 const EventEmmiter = require('../util/event');
 const router = express.Router();
+const path = require('path');
+const multer = require('multer');
 
-router.post('/create',verifyAccessToken,questionAccess,spamProtection,QuestionController.create);
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null,  path.resolve(__dirname, '../../public/uploads/questions'))
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + '-' + file.originalname)
+    }
+  })
+  
+const upload = multer({ storage: storage })
+
+router.post('/create',verifyAccessToken,questionAccess,spamProtection,upload.any(),QuestionController.create);
 router.put('/update',verifyAccessToken,questionAccess,ownQuestionAccess,QuestionController.update);
 router.delete('/delete',verifyAccessToken,studentAndAdminAccess,ownQuestionAccess,QuestionController.delete);
 router.get('/get',verifyAccessToken,QuestionController.getAll);

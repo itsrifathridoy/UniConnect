@@ -49,6 +49,18 @@ function generateDomainRegex(exampleEmail) {
 function isEmailMatchingDomain(email, domainRegex) {
   return domainRegex.test(email);
 }
+
+function transformExamDetails(details) {
+  const prefix = details.exam;
+  const transformedDetails = {};
+  for (const key in details) {
+      if (key !== 'exam') {
+          const newKey = `${prefix}${key.charAt(0).toUpperCase()}${key.slice(1)}`;
+          transformedDetails[newKey] = details[key];
+      }
+  }
+  return transformedDetails;
+}
   
   module.exports = {
     getOffset,
@@ -56,5 +68,6 @@ function isEmailMatchingDomain(email, domainRegex) {
     isValidPassword,
     generateShortName,
     generateDomainRegex,
-    isEmailMatchingDomain
+    isEmailMatchingDomain,
+    transformExamDetails
   }

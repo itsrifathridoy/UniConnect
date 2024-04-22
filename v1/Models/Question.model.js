@@ -76,6 +76,7 @@ class QuestionModel {
     questions.userID AS stuID,
     users.name AS studentName,
     users.username AS studentUsername,
+    users.avatar AS studentAvatar,
     university.uniID,
     university.name AS universityName,
     (SELECT username FROM users WHERE userID = university.uniID) AS universityUsername,
@@ -83,7 +84,9 @@ class QuestionModel {
     answers.ansText,
     answers.timestamp AS answerTimestamp,
     answers.userID AS answerUserID,
-    (SELECT name FROM users WHERE userID = answers.userID) AS answerUserName
+    (SELECT name FROM users WHERE userID = answers.userID) AS answerName,
+    (SELECT username FROM users WHERE userID = answers.userID) AS answerUserName,
+    (SELECT avatar FROM users WHERE userID = answers.userID) AS answerAvatar
   FROM
     questions
   JOIN
@@ -105,7 +108,6 @@ class QuestionModel {
   
       data.forEach(row => {
         const existingQuestion = structuredData.find(q => q.quesID === row.quesID);
-  
         if (!existingQuestion) {
           structuredData.push({
             quesID: row.quesID,
@@ -117,7 +119,8 @@ class QuestionModel {
               student: {
                 stuID: row.stuID,
                 name: row.studentName,
-                username: row.studentUsername
+                username: row.studentUsername,
+                avatar: row.studentAvatar
               },
               university: {
                 uniID: row.uniID,
@@ -132,7 +135,9 @@ class QuestionModel {
                     ansText: row.ansText,
                     timestamp: row.answerTimestamp,
                     userID: row.answerUserID,
-                    username: row.answerUserName
+                    name: row.answerName,
+                    username: row.answerUserName,
+                    avatar: row.answerAvatar
                   }
                 ]
               : []
@@ -143,7 +148,9 @@ class QuestionModel {
             ansText: row.ansText,
             timestamp: row.answerTimestamp,
             userID: row.answerUserID,
-            username: row.answerUserName
+            name: row.answerName,
+            username: row.answerUserName,
+            avatar: row.answerAvatar
           });
         }
       });
@@ -219,6 +226,7 @@ class QuestionModel {
           questions.userID AS stuID,
           users.name AS studentName,
           users.username AS studentUsername,
+          users.avatar AS studentAvatar,
           university.uniID,
           university.name AS universityName,
           (SELECT username FROM users WHERE userID = university.uniID) AS universityUsername,
@@ -226,7 +234,9 @@ class QuestionModel {
           answers.ansText,
           answers.timestamp AS answerTimestamp,
           answers.userID AS answerUserID,
-          (SELECT name FROM users WHERE userID = answers.userID) AS answerUserName
+          (SELECT username FROM users WHERE userID = answers.userID) AS answerUserName,
+          (SELECT name FROM users WHERE userID = answers.userID) AS answerName,
+          (SELECT avatar FROM users WHERE userID = answers.userID) AS answerAvatar
         FROM
           questions
         JOIN
@@ -258,7 +268,8 @@ class QuestionModel {
               student: {
                 stuID: row.stuID,
                 name: row.studentName,
-                username: row.studentUsername
+                username: row.studentUsername,
+                avatar: row.studentAvatar
               },
               university: {
                 uniID: row.uniID,
@@ -273,7 +284,9 @@ class QuestionModel {
                     ansText: row.ansText,
                     timestamp: row.answerTimestamp,
                     userID: row.answerUserID,
-                    username: row.answerUserName
+                    name: row.answerName,
+                    username: row.answerUserName,
+                    avatar: row.answerAvatar
                   }
                 ]
               : []

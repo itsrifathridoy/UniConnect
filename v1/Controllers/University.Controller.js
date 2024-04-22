@@ -129,4 +129,14 @@ module.exports = {
             next(err);
         }
     },
+    getUniversity: async (req, res, next) => {
+        try {
+            const result = await UniversityModel.getAll();
+            if (!result) throw createError.NotFound("No University Found");
+            res.send(result);
+        }
+        catch (err) {
+            next(err);
+        }
+    }
 }

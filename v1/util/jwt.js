@@ -33,17 +33,45 @@ module.exports =  {
         })
     },
     verifyAccessToken: async(req,res,next)=>{
-        if(!req.headers['authorization']) return next(createError.Unauthorized());
-        const authHeader = req.headers['authorization']
-        const bearerToken = authHeader.split(' ');
-        const token = bearerToken[1];
+      
+        if(!req.baseUrl.startsWith('/v1') && !req.cookies.accessToken) return res.redirect('/login');
+        if(req.baseUrl.startsWith('/v1') && !req.headers['authorization']) return next(createError.Unauthorized());
+        let authHeader;
+        let token;
+        if(req.baseUrl.startsWith('/v1')) 
+        {
+            authHeader =  req.headers['authorization']
+            const bearerToken = authHeader.split(' ');
+            token = bearerToken[1];
+        } 
+        if(req.cookies.accessToken) token = req.cookies.accessToken;
         jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,async(err,payload)=>{
             if(err){
+                if(!req.baseUrl.startsWith('/v1'))
+                {
+                    res.clearCookie('accessToken');
+                    res.clearCookie('refreshToken');
+                    res.clearCookie('user');
+                    const regenerate = await fetch('http://localhost:2000/v1/auth/refresh-token',{
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${req.cookies.refreshToken}`
+                        }
+                    });
+                    if(!regenerate.ok) return res.redirect('/login');
+                    const result = await regenerate.json();
+                    console.log(result)
+                    res.cookie('accessToken',result.accessToken);
+                    res.cookie('refreshToken',result.refreshToken);
+                    res.cookie('user',JSON.stringify(result.user));
+                    return next();
+                } 
                 if(err.name === "JsonWebTokenError")
                     return next(createError.Unauthorized());
                 return next(createError.Unauthorized(err.message))
             }
-            const result = await db.query(`SELECT userID,username,email,name,role FROM users WHERE userID = '${payload.aud}';`);
+            const result = await db.query(`SELECT userID,name,username,email,name,role,avatar FROM users WHERE userID = '${payload.aud}';`);
             if(result.length===0) 
                  next(createError.Unauthorized("Invalid Access Token"));
             req.payload = payload;
@@ -86,9 +114,7 @@ module.exports =  {
                 return next(createError.Unauthorized(err.message))
             }
             const result = await db.query(`SELECT * FROM refreshtoken WHERE token = '${token}';`);
-            console.log(result)
             req.user =  await User.getWithFilter({userID: payload.aud}); 
-            console.log(req.user)
             if(result.length===0) 
             next(createError.Unauthorized("Invalid Refresh Token"));
             req.payload = payload;

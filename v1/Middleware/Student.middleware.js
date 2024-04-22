@@ -9,17 +9,21 @@ module.exports = {
             if(!req.body.eduMail) next(createError.BadRequest("Email is required"));
             const regexEmails = await UniversityModel.getRegex(req.body.uniID);
             const emails = JSON.parse(JSON.stringify(regexEmails));
-            let flag = false;
-            emails.forEach((email) => {
-                const regex = generateDomainRegex(email);
-                if (isEmailMatchingDomain(req.body.eduMail, regex)) {
-                    flag = true;
+            if(emails==null) next();
+            else{
+                let flag = false;
+                emails.forEach((email) => {
+                    const regex = generateDomainRegex(email);
+                    if (isEmailMatchingDomain(req.body.eduMail, regex)) {
+                        flag = true;
+                    }
+                });
+                if (!flag) {
+                    next(createError.BadRequest("Email is not matching with university domain"));
                 }
-            });
-            if (!flag) {
-                next(createError.BadRequest("Email is not matching with university domain"));
+                next();
             }
-            next();
+            
         } catch (err) {
             next(err);
         }

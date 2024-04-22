@@ -7,6 +7,7 @@ const { registerSchema, loginSchema } = require('../util/validation_schema');
 const { encryptPassword,validateLogin } = require('../Middleware/Auth.middleware');
 const { signAccessToken,verifyAccessToken,signRefreshToken, verifyRefreshToken } = require('../util/jwt');
 const User = require('../Models/User.model');
+const { re } = require('mathjs');
 
 
 module.exports = {
@@ -25,9 +26,11 @@ module.exports = {
             res.send({accessToken,refreshToken,user:
                 {
                     userID: user.userID,
+                    name: user.name,
                     username: user.username,
                     email: user.email,
-                    role: user.role
+                    role: user.role,
+                    avatar: ""
                 }}
                 );
         }
@@ -42,11 +45,19 @@ module.exports = {
             const accessToken = await signAccessToken(req.userID); 
             const refreshToken = await signRefreshToken(req.userID);
             const user  = (await UserModel.getWithFilter({userID: req.userID})).data[0];
+            if(req.headers['content-type'] === 'application/json') {
             res.send({
                 user,
                 accessToken,
                 refreshToken
             });
+        }
+        else {
+            res.cookie('accessToken',accessToken);
+            res.cookie('refreshToken',refreshToken);
+            res.cookie('user',JSON.stringify(user));
+            res.redirect(`/`)
+        }
         } catch (error) {
             next(error)
         }
@@ -75,5 +86,13 @@ module.exports = {
             next(error);
         }
         res.send({message: "logout successfully"});
+    },
+    changeEmail: async (req, res, next) => {
+        try {
+            console.log(req.body);
+            res.send(req.body);
+        } catch (error) {
+            next(error);
+        }
     }
 }

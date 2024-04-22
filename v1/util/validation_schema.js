@@ -42,8 +42,8 @@ const studentVerifySchema = Joi.object({
     uniID: Joi.string().required(),
     eduMail: Joi.string().email().lowercase().required(),
     department: Joi.string().required(),
-    enrollmentDate: Joi.date().required(),
-    graduationDate: Joi.date().required(),
+    enrollmentDate: Joi.string().required(),
+    graduationDate: Joi.string().optional(),
 
 })
 
@@ -73,6 +73,30 @@ const feedbackUpdateSchema = Joi.object({
     comment: Joi.string(),
 })
 
+const projectSchema = Joi.object({
+    title: Joi.string().required(),
+    shortDescription: Joi.string().default(null),
+    description: Joi.string().default(null),
+    owner: Joi.string().required(),
+    gitLink: Joi.string().required(),
+    liveLink: Joi.string().default(null),
+    colabLink: Joi.string().default(null),
+    logo: Joi.string().default(null),
+    privacy: Joi.string().required().default('public')
+})
+
+const eventSchema = Joi.object({
+    eventID: Joi.string().required(),
+    title: Joi.string().required(),
+    description: Joi.string().required(),
+    poster: Joi.string(),
+    time: Joi.string().isoDate().required(),
+    venue: Joi.string().required(),
+    organizers: Joi.array().items(Joi.string()).required(),
+    speakers: Joi.array().items(Joi.number()).required()
+});
+
+
 module.exports = {
     registerSchema,
     loginSchema,
@@ -88,5 +112,7 @@ module.exports = {
     answerSchema,
     answerUpdateSchema,
     feedbackSchema,
-    feedbackUpdateSchema
+    feedbackUpdateSchema,
+    projectSchema,
+    eventSchema
 }
