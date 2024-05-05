@@ -65,4 +65,40 @@ module.exports = {
             next(err);
         }
     },
+    verify: async (req, res, next) => {
+        try {
+            const { token } = req.query;
+            await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,async(err,payload)=>{
+                if(err){
+                    if(err.name === "JsonWebTokenError")
+                        return next(createError.Unauthorized());
+                    return next(createError.Unauthorized(err.message))
+                }
+                // get the user with the userID to check if the user exists or not
+                const result = await db.query(`SELECT userID,username,email,name,role FROM users WHERE userID = '${payload.aud}';`);
+                // if the user does not exists then return unauthorized error
+                if(result.length===0) 
+                     next(createError.Unauthorized("Invalid Verify Token"));
+                
+                const user  = result[0];
+                // only guestOrg can verify the account
+                //so we check if the user role is guestOrg or not
+                // if not then return unauthorized error
+                if(user.role !== "guestOrg") 
+                    next(createError.Unauthorized("Invalid Verify Token"));
+                
+                // if the user is guestOrg then update the role to org
+                await db.query(`UPDATE users SET role = 'org' WHERE userID = '${user.userID}';`);
+                //send the email to the user that the account is verified
+                await sendMail(user.email, "Organization Account Verified", `<p>Your account has been verified</p>`);
+                const accessToken = await signAccessToken(user.userID);
+                const refreshToken = await signRefreshToken(user.userID);
+                user.role = "org";
+                res.send({accessToken,refreshToken,user});
+            });
+        }
+        catch (err) {
+            next(err);
+        }
+    },
 }

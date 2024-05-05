@@ -8,8 +8,7 @@ const router = express.Router();
 
 router.post('/register', OrganizationController.register);
 router.post('/approve',verifyAccessToken,onlyAdminAccess,OrganizationController.approve);
-
-
+router.get('/verify', OrganizationController.verify);
 
 
 module.exports = router;

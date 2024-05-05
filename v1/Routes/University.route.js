@@ -20,7 +20,7 @@ router.get('/pendingApproval',verifyAccessToken,onlyAdminAccess,UniversityContro
 
 // router.post('/addemails',verifyAccessToken,onlyUniversityAccess,UniversityController.addEmailRegex);
 
-// router.get('/getAll',UniversityController.getUniversity);
+router.get('/getAll',UniversityController.getUniversity);
 
 
 module.exports = router;
