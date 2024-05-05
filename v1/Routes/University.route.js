@@ -16,6 +16,8 @@ router.get('/verify', UniversityController.verify);
 router.get('/getAll',UniversityController.getUniversity);
 
 
+
+
 router.get('/pendingApproval',verifyAccessToken,onlyAdminAccess,UniversityController.pendingApproval);
 
 // router.post('/addemails',verifyAccessToken,onlyUniversityAccess,UniversityController.addEmailRegex);

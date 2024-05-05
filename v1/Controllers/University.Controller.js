@@ -25,7 +25,10 @@ module.exports = {
             const validate = await universityRegSchema.validateAsync(req.body);
             // get function is used to get the user with the email
             //it works like  select * from users where email = req.body.email
-            const doesExist = await UniversityModel.get(req.body.email,"email");
+            const doesExist = await UserModel.getWithFilterOR({
+                email: validate.email,
+                website: validate.website
+            });
             //if the user already exists then throw an error
             if(doesExist) throw createError.Conflict("University already has been registered");
 
