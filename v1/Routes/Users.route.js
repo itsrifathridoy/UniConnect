@@ -6,6 +6,7 @@ const { transformExamDetails } = require('../util/helper');
 const path = require('path');
 const multer = require('multer');
 const { ProjectModel } = require('../Models/Project.model');
+const User = require('../Models/User.model');
 
 
 
@@ -17,6 +18,7 @@ router.get('/projects',verifyAccessToken, async (req, res) => {
     const projects  = await ProjectModel.getUserProjects(req.user.userID);
     res.send(projects);
 });
+
 router.post('/education',verifyAccessToken, async (req, res) => {
     const data  = transformExamDetails(req.body);
     let resp = {status:500};
@@ -47,8 +49,7 @@ router.post('/education',verifyAccessToken, async (req, res) => {
         dob:resp.data.details['Date of Birth'],
         ...tempTransform
     }
-    console.log(details)
-    const detailsResult = await StudentModel.addDetails(details,req.user.userID);
+    const detailsResult = await StudentModel.addEducation(details,req.user.userID);
     res.send(detailsResult);
     
 });
@@ -79,6 +80,11 @@ router.post('/details',verifyAccessToken,
     }
     
 )
+
+router.get('/orgUniClub', async (req, res) => {
+    const result = await User.orgUniClub();
+    res.send(result.data);
+});
 
 
 

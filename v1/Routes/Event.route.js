@@ -10,7 +10,7 @@ const { verifyAccessToken } = require('../util/jwt');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null,  path.resolve(__dirname, '../../public/uploads/projects'))
+      cb(null,  path.resolve(__dirname, '../../public/uploads/events'))
     },
     filename: function (req, file, cb) {
       cb(null, Date.now() + '-' + file.originalname)
@@ -19,9 +19,15 @@ const storage = multer.diskStorage({
   
 const upload = multer({ storage: storage })
 
+//cors middleware
 
-router.post('/create', verifyAccessToken, upload.any(), EventController.create);
+
+router.post('/create', verifyAccessToken,upload.any(), EventController.create);
 router.get('/get/:id', EventController.getEventWithOrganizersAndSpeakers);
 router.get('/get', EventController.getEvents);
+
+
+router.post('/speaker/create', upload.any(), EventController.createSpeaker);
+router.get('/allspeakers', EventController.getAllSpeakers);
 
 module.exports = router;

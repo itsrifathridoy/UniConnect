@@ -75,6 +75,20 @@ class UniversityModel{
     if(!data.length) return null;
     return data[0].allowedEmails;
   }
+
+  static async getPendingApproval() {
+    return db.query(`SELECT users.userID,users.username,users.email,users.name,users.role,users.avatar,university.website,university.description
+    FROM users
+    JOIN university ON users.userID = university.uniID
+    WHERE users.role = "guestUniversity" AND university.approval = 0
+    UNION
+    SELECT users.userID,users.username,users.email,users.name,users.role,users.avatar,
+    organization.website,organization.description
+    FROM users
+    JOIN organization ON users.userID = organization.orgID
+    WHERE users.role = "guestOrg" AND organization.approval = 0;
+    `);
+  }
   
 
 }

@@ -30,7 +30,7 @@ app.post('/webhook',async(req,res,next) =>{
     console.log(req.body);
     res.send('ok');
 })
-app.use('/',view);
+// app.use('/',view);
 
 app.use(async (req, res, next) => {
     next(createError.NotFound());

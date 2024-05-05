@@ -98,6 +98,25 @@ class User {
     }
   } 
 
+  static async getWithFilterOR(filters) {
+    try {
+      const filterClauses = Object.keys(filters).map(key => `${key} = ?`);
+      const whereClause = filterClauses.length > 0 ? `WHERE ${filterClauses.join(' OR ')}` : '';
+
+      const query = `SELECT userID, username, name, email, role,avatar FROM users ${whereClause}`;
+      const values = Object.values(filters);
+
+      const rows = await db.query(query, values);
+      const data = helper.emptyOrRows(rows);
+      if(!data.length) return null;
+      return {
+        data,
+      };
+    } catch (error) {
+      return createError.InternalServerError();
+    }
+  }
+
   async getMultiple(page = 1, listPerPage = 10) {
     const offset = helper.getOffset(page, listPerPage);
     const rows = await db.query(
@@ -129,6 +148,19 @@ class User {
       };
     }
     
+  }
+
+  static async orgUniClub() {
+    try {
+      const query = `SELECT userID, username, name, email, role,avatar FROM users WHERE role = 'org' OR role = 'university' OR role = 'club'`;
+      const rows = await db.query(query);
+      const data = helper.emptyOrRows(rows);
+      return {
+        data,
+      };
+    } catch (error) {
+      return createError.InternalServerError();
+    }
   }
 }
 

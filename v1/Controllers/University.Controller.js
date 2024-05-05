@@ -136,5 +136,15 @@ module.exports = {
         catch (err) {
             next(err);
         }
+    },
+    pendingApproval: async (req, res, next) => {
+        try {
+            const result = await UniversityModel.getPendingApproval();
+            if (!result) throw createError.NotFound("No University Found");
+            res.send(result);
+        }
+        catch (err) {
+            next(err);
+        }
     }
 }

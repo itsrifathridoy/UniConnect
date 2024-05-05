@@ -92,8 +92,18 @@ const eventSchema = Joi.object({
     poster: Joi.string(),
     time: Joi.string().isoDate().required(),
     venue: Joi.string().required(),
+    type: Joi.string().required(),
+    privacy: Joi.string().required(),
     organizers: Joi.array().items(Joi.string()).required(),
-    speakers: Joi.array().items(Joi.number()).required()
+    speakers: Joi.array().items(Joi.string()).required()
+});
+
+const speakerSchema = Joi.object({
+    speakerID: Joi.string().required(),
+    name: Joi.string().required(),
+    picture: Joi.string(),
+    designation: Joi.string(),
+    email: Joi.string().email().lowercase().required()
 });
 
 
@@ -114,5 +124,6 @@ module.exports = {
     feedbackSchema,
     feedbackUpdateSchema,
     projectSchema,
-    eventSchema
+    eventSchema,
+    speakerSchema
 }

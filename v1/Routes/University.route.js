@@ -13,6 +13,8 @@ router.post('/register', UniversityController.register);
 router.post('/approve',verifyAccessToken,onlyAdminAccess,UniversityController.approve);
 router.get('/verify', UniversityController.verify);
 
+router.get('/pendingApproval',verifyAccessToken,onlyAdminAccess,UniversityController.pendingApproval);
+
 
 
 

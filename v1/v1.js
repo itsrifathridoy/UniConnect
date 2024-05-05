@@ -54,9 +54,6 @@ router.use('/project',ProjectRoute)
 router.use('/event',EventRoute)
 
 
-
-
-
 router.post('/test', async (req, res,next) => {
     try {
         const data = req.body;

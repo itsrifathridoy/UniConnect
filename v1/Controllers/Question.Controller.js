@@ -16,7 +16,7 @@ module.exports = {
             imgPath =  req.files[0]?`/uploads/questions/${req.files[0].filename}`:undefined;
             const question = new QuestionModel(generateQuestionId(),req.user.userID,validate.quesText,imgPath); 
             const result = await question.create(); 
-            // EventEmmiter.emit('question', question);
+            EventEmmiter.emit('question', question);
             res.json(result);
         } catch (error) {
             next(error);
@@ -89,7 +89,7 @@ module.exports = {
     getAllQuestionsWithAns: async (req,res,next) => {
         try {
             req.query.page = (req.query.page && parseInt(req.query.page)) || 1;
-           req.query.limit = (req.query.limit && parseInt(req.query.limit)) || 10;
+           req.query.limit = (req.query.limit && parseInt(req.query.limit)) || 100;
             const result = await QuestionModel.getQuestionsWithAnswers(req.query.page,req.query.limit);
             res.json(result);
         } catch (error) {
