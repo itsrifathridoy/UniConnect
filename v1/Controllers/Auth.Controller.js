@@ -59,14 +59,23 @@ module.exports = {
     },
     refreshToken:  async (req, res, next) => {  
         try {
+            // generate new access token and refresh token
+            // req.payload.aud is the userID
             const accessToken = await signAccessToken(req.payload.aud);
-        const refreshToken = await signRefreshToken(req.payload.aud);
+             const refreshToken = await signRefreshToken(req.payload.aud);
         try {
+            // delete the old refresh token
+            // ${} is used to interpolate the value of the variable it's
+            // kind of like string concatenation in javascript
+            //delete the old refresh token from the database so that the old refresh token
+            // can't be used to generate new access token
             await db.query(`DELETE FROM refreshtoken WHERE userID = '${req.payload.aud}' && token = '${req.refreshToken}';`);
         } catch (error) {
             next(error);
         }
         const user = req.user.data[0];
+        // send the new access token and refresh token, and the user details
+        // as a response
         res.send({accessToken,refreshToken,user})
         } catch (error) {
             next(error);
@@ -75,16 +84,23 @@ module.exports = {
     },
     logout: async (req, res, next) => {  
         try {
+            // delete the refresh token so that the refresh token can't be used
+            // to generate new access token
             await db.query(`DELETE FROM refreshtoken WHERE userID = '${req.payload.aud}' && token = '${req.refreshToken}';`);
         } catch (error) {
             next(error);
         }
+        // send the message that the user has been logout successfully
         res.send({message: "logout successfully"});
     },
     changeEmail: async (req, res, next) => {
         try {
-            console.log(req.body);
-            res.send(req.body);
+            const {email} = req.body;
+            // update the email of the user
+            // {email: email} is the filter to update the email of the user
+            // this filter works like WHERE email = email in the query
+            await UserModel.updateUser({email: email},req.user.userID);
+            res.send({message: "email updated successfully"});
         } catch (error) {
             next(error);
         }

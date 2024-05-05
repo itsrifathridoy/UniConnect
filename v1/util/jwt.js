@@ -74,18 +74,39 @@ module.exports =  {
         })
     },
     verifyRefreshToken: async(req,res,next)=>{
+        // request header should contain authorization
+        // if not return unauthorized error
         if(!req.headers['authorization']) return next(createError.Unauthorized());
+        // get the authorization header
         const authHeader = req.headers['authorization']
+        // split the authorization header by space because it contains
+        // bearer token like 'Bearer e545fdffgadgfdgfsdgdsg' so we split it by space
         const bearerToken = authHeader.split(' ');
+        //after split the bearerToken contains ['Bearer','e545fdffgadgfdgfsdgdsg']
+        // so we get the token from the bearer token
+        // bearerToken[0] contains 'Bearer' and bearerToken[1] contains the token
         const token = bearerToken[1];
+        // verify the token with the refresh token secret
+        //process.env.REFRESH_TOKEN_SECRET is the secret key for the refresh token
+        //we can find the secret key in the .env file
         jwt.verify(token,process.env.REFRESH_TOKEN_SECRET,async(err,payload)=>{
             if(err){
+                // if the error name is JsonWebTokenError then return unauthorized error
                 if(err.name === "JsonWebTokenError")
                     return next(createError.Unauthorized());
+                // otherwise return unauthorized error with the error message
                 return next(createError.Unauthorized(err.message))
             }
+            // query to get the refresh token from the database
+            // we get the refresh token from the database to check if the token
+            // is valid or not
             const result = await db.query(`SELECT * FROM refreshtoken WHERE token = '${token}';`);
+            // getWithFilter is a helper function that we create in the user model
+            // to get the user with the filter.
+            // we update req.user with the user because we need the user details
+            // in the controller to get the user details.
             req.user =  await User.getWithFilter({userID: payload.aud}); 
+            // if the result is empty then return unauthorized error
             if(result.length===0)
             next(createError.Unauthorized("Invalid Refresh Token"));
             req.payload = payload;
