@@ -23,7 +23,6 @@ async function validateLogin(req,res,next)
 {
   try {
     const result = await loginSchema.validateAsync(req.body);
-    console.log(result);
     const email = result.email;
    const password = result.password;
   const query = `SELECT userID,password FROM users WHERE email = '${email}'`;

@@ -14,7 +14,6 @@ module.exports = {
     register: async (req, res, next) => {  
         try{
             const {name,email,password}  = req.body;
-            //rifat@mmmfd
             const username = email.split("@")[0];
             //create user
             const user = new UserModel(crypto.randomUUID(),username.toLowerCase(),email.toLowerCase(),name,password,"user");

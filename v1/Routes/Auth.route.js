@@ -1,4 +1,5 @@
 const express = require('express');
+
 const AuthController = require('../Controllers/Auth.Controller')
 const { encryptPassword,validateLogin } = require('../Middleware/Auth.middleware');
 const {onlyAdminAccess} = require('../Middleware/Admin.middleware')
@@ -17,6 +18,13 @@ router.post('/refresh-token',verifyRefreshToken,AuthController.refreshToken);
 router.delete('/logout',verifyRefreshToken,AuthController.logout );
 
 // router.put('/change-email',verifyAccessToken,AuthController.changeEmail);
+
+
+
+
+
+
+
 
 
 

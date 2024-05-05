@@ -7,20 +7,12 @@ const ClubRoute = require('./Routes/Club.route');
 const StudentRoute = require('./Routes/Student.route');
 const QuestionRoute = require('./Routes/Question.route');
 const EventRoute = require('./Routes/Event.route');
-const { EducationBoardResult } = require('../Extra/result');
-const path = require('path');
-var fs = require('fs');
 
-const { re } = require('mathjs');
-const cli = require('child_process');
-const { verifyAccessToken } = require('./util/jwt');
-const { generateDockerComposeFile } = require('./util/docker');
-const ProjectController = require('./Controllers/Project.Controller');
 const ProjectRoute = require('./Routes/Project.route');
-const multer = require('multer');
-const EventModel = require('./Models/Event.model');
 const { eventSchema } = require('./util/validation_schema');
 require('./util/event')
+
+
 const router = express.Router();
 
 
@@ -28,7 +20,6 @@ const router = express.Router();
 
 //User Role Specific Routes
 router.use('/auth', AuthRoute);
-
 router.use('/university', UniversityRoute);
 router.use('/org', OrganizationRoute);
 
