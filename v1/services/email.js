@@ -5,19 +5,19 @@ var nodemailer = require('nodemailer');
 async function sendMail(receiver,subject,body)
 {
     const transporter = nodemailer.createTransport({
-        host: "us2.smtp.mailhostbox.com",
-        port: 587,
-        secure: false,
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
         auth: {
-          user: "uniconnect@uiuss.tech",
-          pass: "CQ%nIrP6",
+          user: "airamtafir@gmail.com",
+          pass: process.env.GMAIL_PASSWORD,
         },
       });
     
     var mailOptions = {
       from: {
         name: 'UniConnect',
-        address: 'uniconnect@uiuss.tech'
+        address: 'airamtafir@gmail.com'
     },
       to: receiver,
       subject: subject,

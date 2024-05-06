@@ -7,6 +7,8 @@ const generator = require('generate-password');
 const bcrypt = require('bcrypt');
 const { OrganizationModel } = require("../Models/Organization.model");
 const { signAccessToken, signRefreshToken } = require('../util/jwt');
+const jwt  = require('jsonwebtoken');
+const db = require('../services/db');
 
 module.exports = {
     register: async (req, res, next) => {
@@ -101,4 +103,16 @@ module.exports = {
             next(err);
         }
     },
+    getOrganization: async (req, res, next) => {
+        try {
+            const result = await OrganizationModel.getWithFilter({
+                approval: 1
+            });
+            if (!result) throw createError.NotFound("Organization Not Found");
+            res.send(result.data);
+        }
+        catch (err) {
+            next(err);
+        }
+    }
 }

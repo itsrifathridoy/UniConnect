@@ -7,6 +7,7 @@ const path = require('path');
 const multer = require('multer');
 const { ProjectModel } = require('../Models/Project.model');
 const User = require('../Models/User.model');
+const { onlyAdminAccess } = require('../Middleware/Admin.middleware');
 
 
 
@@ -17,6 +18,26 @@ router.get('/me',verifyAccessToken, async (req, res) => {
 router.get('/projects',verifyAccessToken, async (req, res) => {
     const projects  = await ProjectModel.getUserProjects(req.user.userID);
     res.send(projects);
+});
+
+
+
+
+
+
+router.get('/adminhome',verifyAccessToken,onlyAdminAccess, async (req, res) => {
+    const info = await User.adminHome();
+    res.send(info);
+});
+
+router.get('/generateCV',verifyAccessToken, async (req, res) => {
+    const studentDetails = await StudentModel.studentDetails(req.user.userID);
+    const projects = await ProjectModel.getUserProjects(req.user.userID);
+    const data = {
+        student:studentDetails,
+        projects
+    }
+    
 });
 
 router.post('/education',verifyAccessToken, async (req, res) => {

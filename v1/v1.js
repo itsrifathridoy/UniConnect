@@ -7,6 +7,7 @@ const ClubRoute = require('./Routes/Club.route');
 const StudentRoute = require('./Routes/Student.route');
 const QuestionRoute = require('./Routes/Question.route');
 const EventRoute = require('./Routes/Event.route');
+const ResearchRoute = require('./Routes/Research.route');
 
 const ProjectRoute = require('./Routes/Project.route');
 const { eventSchema } = require('./util/validation_schema');
@@ -41,6 +42,7 @@ router.use('/user', UsersRoute);
 router.use('/question', QuestionRoute);
 
 router.use('/project',ProjectRoute)
+router.use('/research',ResearchRoute)
 
 router.use('/event',EventRoute)
 

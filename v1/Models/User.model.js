@@ -162,6 +162,51 @@ class User {
       return createError.InternalServerError();
     }
   }
+
+  static async adminHome() {
+    try {
+      const query = `SELECT 
+      role,
+      COUNT(*) as roleCount
+  FROM 
+      users
+  GROUP BY 
+      role
+  
+  UNION ALL
+  
+  SELECT 
+      'Question' as role,
+      COUNT(*) as roleCount
+  FROM 
+      questions;
+  `;
+      const CountRows = await db.query(query);
+      const countData = helper.emptyOrRows(CountRows);
+      const query2 = `SELECT users.userID,users.username,users.email,users.name,users.role,users.avatar,university.website,university.description
+      FROM users
+      JOIN university ON users.userID = university.uniID
+      WHERE users.role = "guestUniversity" AND university.approval = 0;`
+      const rows = await db.query(query2);
+      const data = helper.emptyOrRows(rows);
+
+      const query3 = `SELECT users.userID,users.username,users.email,users.name,users.role,users.avatar,
+      organization.website,organization.description
+      FROM users
+      JOIN organization ON users.userID = organization.orgID
+      WHERE users.role = "guestOrg" AND organization.approval = 0;`
+
+      const rows2 = await db.query(query3);
+      const data2 = helper.emptyOrRows(rows2);
+      return {
+        countData,
+        university: data,
+        organization: data2
+      };
+    } catch (error) {
+      return createError.InternalServerError();
+    }
+  }
 }
 
 module.exports = User;

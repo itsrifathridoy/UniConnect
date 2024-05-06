@@ -107,10 +107,18 @@ const speakerSchema = Joi.object({
 });
 
 
+const proposalSchema = Joi.object({
+    title: Joi.string().required(),
+    description: Joi.string().required(),
+    documentURL: Joi.string(),
+})
+
+
 module.exports = {
     registerSchema,
     loginSchema,
     universityRegSchema,
+    proposalSchema,
     universityApproveSchema,
     organizationRegSchema,
     clubRegSchema,

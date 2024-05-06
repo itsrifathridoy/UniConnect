@@ -55,14 +55,13 @@ class UniversityModel{
       
   static async get(fieldValue,field = 'uniID') {
     const query = `SELECT * FROM university WHERE ${field} = '${fieldValue}'`;
-    console.log(query)
     const rows = await db.query(query);
     const data = helper.emptyOrRows(rows);
     if(!data.length) return null;
     return data;
   }
   static async getAll() {
-    const query = `SELECT * FROM university`;
+    const query = `SELECT * FROM university WHERE approval = 1`;
     const rows = await db.query(query);
     const data = helper.emptyOrRows(rows);
     if(!data.length) return null;

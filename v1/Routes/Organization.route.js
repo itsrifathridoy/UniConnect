@@ -11,4 +11,6 @@ router.post('/approve',verifyAccessToken,onlyAdminAccess,OrganizationController.
 router.get('/verify', OrganizationController.verify);
 
 
+router.get('/getAll',OrganizationController.getOrganization);
+
 module.exports = router;
