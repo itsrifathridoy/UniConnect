@@ -28,6 +28,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 router.post('/propose',verifyAccessToken,upload.any(),ResearchController.propose);
+router.get('/proposal/:id',ResearchController.getProposal);
 router.get('/get',ResearchController.getResearches);
 router.get('/get/:id',ResearchController.getResearch);
 

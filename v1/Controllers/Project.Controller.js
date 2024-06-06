@@ -8,9 +8,8 @@ const { ProjectModel } = require('../Models/Project.model');
 const { get } = require('http');
 const { addProjectCommits, getCommits } = require('../util/github');
 const { i } = require('mathjs');
-function generateId() {
-    return Math.floor(Math.random() * 1000000);
-}
+const db = require('../services/db');
+
 module.exports = {
     create: async (req,res,next) => {
         try {
@@ -22,30 +21,34 @@ module.exports = {
                 }
             }
              const validate = await projectSchema.validateAsync(req.body); 
-            let status = 'In Progress';
-            
-            const project = new ProjectModel(generateId(),validate.title,validate.shortDescription,validate.description,validate.owner,validate.gitLink,validate.liveLink,validate.colabLink,logo,validate.privacy,status);
-            const gitLink = project.gitLink;
-            const owner = gitLink.split('/')[3];
-            const repo = gitLink.split('/')[4];
-            const commits = await getCommits(owner, repo);
-            console.log(commits.length);
-            if(commits.length>1)
-            {
-                project.status = 'Under Development'
-            }
+            validate.logo = logo;
+            const project = new ProjectModel(validate);
+            console.log(project);
             const data =  await project.create();
+            // const gitLink = project.gitLink;
+            // const owner = gitLink.split('/')[3];
+            // const repo = gitLink.split('/')[4];
+            // const commits = await getCommits(owner, repo);
+            // console.log(commits.length);
+            // if(commits.length>1)
+            // {
+            //     project.status = 'Under Development'
+            // }
            
-            const Data = await addProjectCommits(owner,repo,project.projectID);
+            // const Data = await addProjectCommits(owner,repo,project.projectID);
               res.send(data)
         } catch (error) {
             next(error)
         }
         
     },
-    getProjects: async (req,res,next) => {
+    publicProjects: async (req,res,next) => {
         try {
-            const projects = await ProjectModel.getProjects();
+            const limit = parseInt(req.query.limit) || 10;
+            const page = parseInt(req.query.page) || 1;
+            const search = req.query.search || '';
+            const status = req.query.status || '';
+            const projects = await ProjectModel.publicProjects(page,limit,search,status);
             res.send(projects);
         } catch (error) {
             next(error)
@@ -53,7 +56,33 @@ module.exports = {
     },
     getProject: async (req,res,next) => {
         try {
-            res.send(req.project);
+            
+            const project = await ProjectModel.getProjectDetails(req.params.id);
+            const myTasks = [];
+            project.tasks.forEach(task => {
+                task.taskAssignUsers.forEach(user => {
+                    if(user.username == req.user.username)
+                    {
+                        myTasks.push(task);
+                    }
+                })
+            });
+            project.myTasks = myTasks;
+            if(project.owner == req.user.userID)
+                project.isOwner = true;
+            else
+                project.isOwner = false;
+            //is contributor
+            project.isContributor = false;
+            project.projectContributors.find(contributor => {
+                if(contributor.id == req.user.userID)
+                {
+                    project.isContributor = true;
+                }
+            });
+            project.viewingUser = req.user.username;
+            
+            return res.send(project);
         } catch (error) {
             next(error)
         }
@@ -140,5 +169,72 @@ module.exports = {
         } catch (error) {
             next(error)
         }
+    },
+    userProjects: async (req,res,next) => {
+        try {
+            const limit = parseInt(req.query.limit) || 10;
+            const page = parseInt(req.query.page) || 1;
+            const projects = await ProjectModel.userProjects(req.user.userID,page,limit);
+            res.send(projects);
+        } catch (error) {
+            next(error)
+        }
+    },
+    getTopProjects: async (req,res,next) => {
+        try {
+            const projects = await ProjectModel.getTopProjects();
+            res.send(projects);
+        } catch (error) {
+            next(error)
+        }
+    },
+    updateProject: async (req,res,next) => {
+        try {
+            const projectID = req.params.projectID;
+            const project = await ProjectModel.getProject(projectID);
+            if(req.files.length>0)
+            {
+                req.body.logo = `/uploads/projects/${req.files[0].filename}`;
+            }
+            const data = await ProjectModel.update(req.body,projectID);
+            res.send(data);
+        } catch (error) {
+            next(error)
+        }
+    },
+    updateProjectStatus: async(req,res,next)=> {
+        try {
+            const projectID = req.params.projectID;
+            const status = req.query.status;
+            await db.query(`UPDATE projects SET status = '${status}' WHERE projectID = '${projectID}'`);
+            res.send('ok');
+        } catch (error) {
+            next(error)
+        }
+    },
+    updateTask: async(req,res,next) => {
+        try {
+            const taskID = req.params.taskID;
+            const data = req.query.status;
+            await db.query(`UPDATE project_tasks SET status = '${data}' WHERE taskID = '${taskID}'`);
+            res.send('ok');
+        } catch (error) {
+            next(error)
+        }
+    },
+    addProjectContributors: async(req,res,next) => {
+        const projectID = req.query.projectID;
+        if(!projectID)
+        {
+            res.send('Project ID is required');
+            return;
+        }
+        //find gitLink
+        const project = await ProjectModel.getProject(projectID);
+        console.log(project);
+        const owner = project.gitLink.split('/')[3];
+        const repo = project.gitLink.split('/')[4];
+        const data  = await addProjectCommits(owner,repo,projectID);
+        console.log(data);
     }
 }

@@ -15,7 +15,13 @@ router.post('/login',validateLogin,AuthController.login );
 
 router.post('/refresh-token',verifyRefreshToken,AuthController.refreshToken);
 
+router.post('/identity',verifyRefreshToken,AuthController.identity);
+
 router.delete('/logout',verifyRefreshToken,AuthController.logout );
+
+
+
+
 
 // router.put('/change-email',verifyAccessToken,AuthController.changeEmail);
 
@@ -32,6 +38,7 @@ router.delete('/logout',verifyRefreshToken,AuthController.logout );
 
 router.post('/google', async(req, res) => {
     const doesExist = await User.getWithFilter({ email: req.body.email });
+    console.log(doesExist);
     if(doesExist){
         const accessToken = await signAccessToken(doesExist.data[0].userID);
         const refreshToken = await signRefreshToken(doesExist.data[0].userID);
@@ -49,7 +56,9 @@ router.post('/google', async(req, res) => {
 });
 
 router.post('/github',async(req,res)=>{
+    console.log(req.body);
     const doesExist = await User.getWithFilter({ email: req.body.email });
+    console.log("doesExist",doesExist);
     if(doesExist){
         const accessToken = await signAccessToken(doesExist.data[0].userID);
         const refreshToken = await signRefreshToken(doesExist.data[0].userID);

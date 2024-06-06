@@ -90,4 +90,12 @@ module.exports = {
             next(error);
         }
     },
+    getProposal: async (req,res,next) => {
+        try {
+            const result = await db.query(`SELECT * FROM research_proposals WHERE proposalID = '${req.params.id}'`);
+            res.json(result[0]);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

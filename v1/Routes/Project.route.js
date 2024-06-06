@@ -35,6 +35,13 @@ router.get('/contributions/:id',ProjectController.getCommits)
 router.get('/contributors/:id',ProjectController.getContributors)
 
 router.get('/get/:id',verifyAccessToken,accessCheck,ProjectController.getProject);
+router.get('/public',ProjectController.publicProjects);
+router.get('/get',verifyAccessToken,ProjectController.userProjects);
+router.get('/top',ProjectController.getTopProjects);
+router.put('/update/:projectID',verifyAccessToken,upload.any(),ProjectController.updateProject);
+router.put('/updatestatus/:projectID',ProjectController.updateProjectStatus);
+router.put('/tasks/:taskID',ProjectController.updateTask);
+router.get('/addProjectContributors',ProjectController.addProjectContributors);
 
 
 

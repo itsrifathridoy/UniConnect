@@ -75,18 +75,19 @@ class UniversityModel{
     return data[0].allowedEmails;
   }
 
-  static async getPendingApproval() {
+  static async getPendingApproval(search) {
+    search==undefined?search='':search;
     return db.query(`SELECT users.userID,users.username,users.email,users.name,users.role,users.avatar,university.website,university.description
     FROM users
     JOIN university ON users.userID = university.uniID
-    WHERE users.role = "guestUniversity" AND university.approval = 0
+    WHERE (users.role = "guestUniversity" AND university.approval = 0) AND (users.name LIKE '%${search}%' OR users.username LIKE '%${search}%' OR users.email LIKE '%${search}%')
     UNION
     SELECT users.userID,users.username,users.email,users.name,users.role,users.avatar,
     organization.website,organization.description
     FROM users
     JOIN organization ON users.userID = organization.orgID
-    WHERE users.role = "guestOrg" AND organization.approval = 0;
-    `);
+    WHERE (users.role = "guestOrg" AND organization.approval = 0) AND (users.name LIKE '%${search}%' OR users.username LIKE '%${search}%' OR users.email LIKE '%${search}%')`);
+  
   }
   
 

@@ -42,6 +42,7 @@ module.exports = {
     },
     login: async (req, res, next) => {  
         try {
+            console.log(req.body);
             const accessToken = await signAccessToken(req.userID); 
             const refreshToken = await signRefreshToken(req.userID);
             const user  = (await UserModel.getWithFilter({userID: req.userID})).data[0];
@@ -66,6 +67,22 @@ module.exports = {
             next(error);
         }
         const user = req.user.data[0];
+        res.send({accessToken,refreshToken,user})
+        } catch (error) {
+            next(error);
+        }
+        
+    },
+    identity:  async (req, res, next) => {  
+        try {
+            const accessToken = await signAccessToken(req.payload.aud);
+        try {
+        } catch (error) {
+            next(error);
+        }
+     
+        const user = req.user.data[0];
+        const refreshToken = req.refreshToken;
         res.send({accessToken,refreshToken,user})
         } catch (error) {
             next(error);

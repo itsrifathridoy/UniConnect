@@ -13,4 +13,7 @@ router.get('/verify', OrganizationController.verify);
 
 router.get('/getAll',OrganizationController.getOrganization);
 
+router.get('/getAllApplications',verifyAccessToken,OrganizationController.getApplications);
+router.post('/approveApplication/:appID',verifyAccessToken,OrganizationController.approveApplication);
+
 module.exports = router;

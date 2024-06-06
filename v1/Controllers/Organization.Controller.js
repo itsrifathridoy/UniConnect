@@ -9,6 +9,7 @@ const { OrganizationModel } = require("../Models/Organization.model");
 const { signAccessToken, signRefreshToken } = require('../util/jwt');
 const jwt  = require('jsonwebtoken');
 const db = require('../services/db');
+const { re } = require('mathjs');
 
 module.exports = {
     register: async (req, res, next) => {
@@ -110,6 +111,52 @@ module.exports = {
             });
             if (!result) throw createError.NotFound("Organization Not Found");
             res.send(result.data);
+        }
+        catch (err) {
+            next(err);
+        }
+    },
+    getApplications: async (req, res, next) => {
+        try {
+            const rows  = await db.query(`SELECT 
+            users.userID,
+            users.name AS student_name,
+            users.username,
+            users.avatar,
+            job_applications.appID,
+            job_applications.jobID,
+            job_applications.stuID,
+            job_applications.appStatus,
+            job_applications.appTime,
+            jobs.jobTitle AS job_name,
+            organization.orgID,
+            organization.name AS organization_name
+        FROM 
+            job_applications
+        JOIN 
+            jobs ON jobs.jobID = job_applications.jobID
+        JOIN 
+            users ON job_applications.stuID = users.userID
+        JOIN 
+            organization ON organization.orgID = jobs.orgID
+        WHERE 
+            organization.orgID = '${req.user.userID}' AND job_applications.appStatus = "Pending";
+        
+        `)
+        console.log(req.user.userID)
+            res.send(rows);
+        }
+        catch (err) {
+            next(err);
+        }
+    },
+    approveApplication: async (req, res, next) => {
+        try {
+            console.log(req.params.appID,req.query.status)  
+            const sql = `UPDATE job_applications SET appStatus = "${req.query.status}" WHERE appID = ${req.params.appID}`
+            console.log(sql)
+            await db.query(sql);
+            res.send("ok");
         }
         catch (err) {
             next(err);

@@ -90,3 +90,71 @@ CREATE TABLE feedback (
 );
 
 
+
+CREATE TABLE education_levels (
+    educationLevelID INT PRIMARY KEY AUTO_INCREMENT,
+    degreeName VARCHAR(255) NOT NULL,
+    program VARCHAR(255) NOT NULL,
+    UNIQUE (degreeName, program)
+);
+CREATE TABLE jobs (
+    jobID INT PRIMARY KEY AUTO_INCREMENT,
+    jobTitle VARCHAR(255) NOT NULL,
+    orgID VARCHAR(50),
+    jobLocation VARCHAR(255),
+    description TEXT,
+    responsibilities TEXT,
+    qualifications TEXT,
+    experience TEXT,
+    jobType VARCHAR(50),
+    salary DECIMAL(10, 2),
+    lastApplyDate DATE,
+    jobPostTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    experienceCategory VARCHAR(50),
+    educationLevelID INT NOT NULL DEFAULT 0,
+    FOREIGN KEY (orgID) REFERENCES organization(orgID),
+    FOREIGN KEY (educationLevelID) REFERENCES education_levels(educationLevelID)
+);
+
+CREATE TABLE skills (
+    skillID INT PRIMARY KEY AUTO_INCREMENT,
+    skillName VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE job_skills (
+    jobID INT,
+    skillID INT,
+    skillLevel VARCHAR(50),
+    PRIMARY KEY (jobID, skillID, skillLevel),
+    FOREIGN KEY (jobID) REFERENCES jobs(jobID),
+    FOREIGN KEY (skillID) REFERENCES skills(skillID)
+);
+CREATE TABLE job_applications (
+    appID INT PRIMARY KEY AUTO_INCREMENT,
+    jobID INT,
+    stuID VARCHAR(255),
+    appStatus ENUM('Pending', 'Accepted', 'Rejected') NOT NULL DEFAULT 'Pending',
+    appTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (jobID) REFERENCES jobs(jobID),
+    FOREIGN KEY (stuID) REFERENCES students(stuID)
+);
+CREATE TABLE students_skills (
+    stuID VARCHAR(255),
+    skillID INT,
+    skillLevel VARCHAR(50),
+    PRIMARY KEY (stuID, skillID, skillLevel),
+    FOREIGN KEY (stuID) REFERENCES students(stuID),
+    FOREIGN KEY (skillID) REFERENCES skills(skillID)
+);
+CREATE TABLE student_education (
+    studentEducationID INT PRIMARY KEY AUTO_INCREMENT,
+    stuID VARCHAR(255),
+    educationLevelID INT,
+    major VARCHAR(255),
+    graduationDate DATE,
+    currentYear INT,
+    uniID VARCHAR(255),
+    FOREIGN KEY (stuID) REFERENCES students(stuID),
+    FOREIGN KEY (uniID) REFERENCES university(uniID),
+    FOREIGN KEY (educationLevelID) REFERENCES education_levels(educationLevelID)
+);

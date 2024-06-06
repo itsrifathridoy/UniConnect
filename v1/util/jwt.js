@@ -22,7 +22,7 @@ module.exports =  {
             }
             const secret = process.env.ACCESS_TOKEN_SECRET;
             const option = {
-                expiresIn: '15m',
+                expiresIn: '1d',
                 issuer: "uniconnect.com",
                 audience:userID,
             }

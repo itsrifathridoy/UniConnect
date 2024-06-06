@@ -23,7 +23,7 @@ module.exports = {
     register: async (req, res, next) => {
         try {
             const validate = await universityRegSchema.validateAsync(req.body);
-            const doesExist = await UniversityModel.get(req.body.email,"email");
+            const doesExist = await UserModel.getWithFilter({ email: validate.email });
     
             if(doesExist) throw createError.Conflict("University already has been registered");
 
@@ -139,7 +139,7 @@ module.exports = {
     },
     pendingApproval: async (req, res, next) => {
         try {
-            const result = await UniversityModel.getPendingApproval();
+            const result = await UniversityModel.getPendingApproval(req.query.search);
             if (!result) throw createError.NotFound("No University Found");
             res.send(result);
         }

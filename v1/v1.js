@@ -8,15 +8,24 @@ const StudentRoute = require('./Routes/Student.route');
 const QuestionRoute = require('./Routes/Question.route');
 const EventRoute = require('./Routes/Event.route');
 const ResearchRoute = require('./Routes/Research.route');
+const DashboardRoute = require('./Routes/Dashboard.route');
+const JobRoute = require('./Routes/Jobs.route');
 
 const ProjectRoute = require('./Routes/Project.route');
 const { eventSchema } = require('./util/validation_schema');
 require('./util/event')
+// const cors=require("cors");
 
 
 const router = express.Router();
 
-
+// const corsOptions ={
+//     origin:'*', 
+//     credentials:true,            //access-control-allow-credentials:true
+//     optionSuccessStatus:200,
+//  }
+ 
+//  router.use(cors(corsOptions))
 
 
 //User Role Specific Routes
@@ -24,6 +33,8 @@ router.use('/auth', AuthRoute);
 router.use('/university', UniversityRoute);
 router.use('/org', OrganizationRoute);
 
+
+router.use('/dashboard', DashboardRoute);
 
 
 // router.use('/club', ClubRoute);
@@ -45,7 +56,7 @@ router.use('/project',ProjectRoute)
 router.use('/research',ResearchRoute)
 
 router.use('/event',EventRoute)
-
+router.use('/job',JobRoute)
 
 router.post('/test', async (req, res,next) => {
     try {

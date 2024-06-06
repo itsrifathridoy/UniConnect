@@ -75,7 +75,6 @@ const feedbackUpdateSchema = Joi.object({
 
 const projectSchema = Joi.object({
     title: Joi.string().required(),
-    shortDescription: Joi.string().default(null),
     description: Joi.string().default(null),
     owner: Joi.string().required(),
     gitLink: Joi.string().required(),
@@ -112,7 +111,36 @@ const proposalSchema = Joi.object({
     description: Joi.string().required(),
     documentURL: Joi.string(),
 })
+//job validation
 
+// jobID	
+// jobTitle	
+// orgID	
+// jobLocation	
+// description	
+// responsibilities	
+// qualifications	
+// experience	
+// jobType	
+// salary	
+// lastApplyDate	
+// jobPostTime	
+// experienceCategory	
+// educationLevelID
+const jobSchema = Joi.object({
+    jobTitle: Joi.string().required(),
+    orgID: Joi.string().required(),
+    jobLocation: Joi.string().required(),
+    description: Joi.string().required(),
+    responsibilities: Joi.string().required(),
+    qualifications: Joi.string().required(),
+    experience: Joi.string().required(),
+    jobType: Joi.string().required(),
+    salary: Joi.string().required(),
+    lastApplyDate: Joi.string().required(),
+    experienceCategory: Joi.string().required(),
+    educationLevelID: Joi.number().required()
+})   
 
 module.exports = {
     registerSchema,
@@ -133,5 +161,6 @@ module.exports = {
     feedbackUpdateSchema,
     projectSchema,
     eventSchema,
-    speakerSchema
+    speakerSchema,
+    jobSchema
 }
